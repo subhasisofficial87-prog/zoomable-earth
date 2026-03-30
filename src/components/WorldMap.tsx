@@ -91,8 +91,11 @@ const WorldMap = () => {
       ref={containerRef}
       className="relative w-full h-screen bg-map-bg overflow-hidden"
     >
+      {/* Search */}
+      <CountrySearch onSelectCountry={handleSearchSelect} />
+
       {/* Header */}
-      <div className="absolute top-0 left-0 right-0 z-10 flex items-center justify-between px-6 py-4">
+      <div className="absolute top-14 left-0 right-0 z-10 flex items-center justify-between px-6 py-2">
         <h1 className="text-2xl font-bold tracking-tight text-map-highlight">
           World Explorer
         </h1>
