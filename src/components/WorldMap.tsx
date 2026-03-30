@@ -146,35 +146,42 @@ const WorldMap = () => {
         >
           <Geographies geography={GEO_URL}>
             {({ geographies }) =>
-              geographies.map((geo, i) => (
-                <Geography
-                  key={geo.rsmKey}
-                  geography={geo}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleCountryClick(geo, e);
-                  }}
-                  style={{
-                    default: {
-                      fill: getCountryColor(i),
-                      stroke: "hsl(210, 20%, 25%)",
-                      strokeWidth: 0.5,
-                      outline: "none",
-                    },
-                    hover: {
-                      fill: "hsl(45, 90%, 55%)",
-                      stroke: "hsl(45, 90%, 70%)",
-                      strokeWidth: 1,
-                      outline: "none",
-                      cursor: "pointer",
-                    },
-                    pressed: {
-                      fill: "hsl(45, 90%, 45%)",
-                      outline: "none",
-                    },
-                  }}
-                />
-              ))
+              geographies.map((geo, i) => {
+                const id = geo.id || geo.properties?.["ISO_A3"];
+                const alpha3 = numericToAlpha3[id] || id;
+                const fillColor = mapMode === "heatmap"
+                  ? getHeatmapColor(alpha3)
+                  : getCountryColor(i);
+                return (
+                  <Geography
+                    key={geo.rsmKey}
+                    geography={geo}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleCountryClick(geo, e);
+                    }}
+                    style={{
+                      default: {
+                        fill: fillColor,
+                        stroke: "hsl(210, 20%, 25%)",
+                        strokeWidth: 0.5,
+                        outline: "none",
+                      },
+                      hover: {
+                        fill: "hsl(45, 90%, 55%)",
+                        stroke: "hsl(45, 90%, 70%)",
+                        strokeWidth: 1,
+                        outline: "none",
+                        cursor: "pointer",
+                      },
+                      pressed: {
+                        fill: "hsl(45, 90%, 45%)",
+                        outline: "none",
+                      },
+                    }}
+                  />
+                );
+              })
             }
           </Geographies>
         </ZoomableGroup>
