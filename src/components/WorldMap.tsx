@@ -5,10 +5,11 @@ import {
   Geography,
   ZoomableGroup,
 } from "react-simple-maps";
-import { countryData, getCountryColor, type CountryInfo } from "@/data/countryData";
+import { countryData, getCountryColor, getHeatmapColor, type CountryInfo } from "@/data/countryData";
 import { countryCoordinates } from "@/data/countryCoordinates";
 import CountryTooltip from "./CountryTooltip";
 import CountrySearch from "./CountrySearch";
+import MapLegend from "./MapLegend";
 
 const GEO_URL = "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json";
 
@@ -48,6 +49,7 @@ const WorldMap = () => {
   } | null>(null);
   const [zoom, setZoom] = useState(1);
   const [center, setCenter] = useState<[number, number]>([0, 20]);
+  const [mapMode, setMapMode] = useState<"default" | "heatmap">("default");
   const containerRef = useRef<HTMLDivElement>(null);
 
   const handleCountryClick = useCallback(
@@ -144,39 +146,52 @@ const WorldMap = () => {
         >
           <Geographies geography={GEO_URL}>
             {({ geographies }) =>
-              geographies.map((geo, i) => (
-                <Geography
-                  key={geo.rsmKey}
-                  geography={geo}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleCountryClick(geo, e);
-                  }}
-                  style={{
-                    default: {
-                      fill: getCountryColor(i),
-                      stroke: "hsl(210, 20%, 25%)",
-                      strokeWidth: 0.5,
-                      outline: "none",
-                    },
-                    hover: {
-                      fill: "hsl(45, 90%, 55%)",
-                      stroke: "hsl(45, 90%, 70%)",
-                      strokeWidth: 1,
-                      outline: "none",
-                      cursor: "pointer",
-                    },
-                    pressed: {
-                      fill: "hsl(45, 90%, 45%)",
-                      outline: "none",
-                    },
-                  }}
-                />
-              ))
+              geographies.map((geo, i) => {
+                const id = geo.id || geo.properties?.["ISO_A3"];
+                const alpha3 = numericToAlpha3[id] || id;
+                const fillColor = mapMode === "heatmap"
+                  ? getHeatmapColor(alpha3)
+                  : getCountryColor(i);
+                return (
+                  <Geography
+                    key={geo.rsmKey}
+                    geography={geo}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleCountryClick(geo, e);
+                    }}
+                    style={{
+                      default: {
+                        fill: fillColor,
+                        stroke: "hsl(210, 20%, 25%)",
+                        strokeWidth: 0.5,
+                        outline: "none",
+                      },
+                      hover: {
+                        fill: "hsl(45, 90%, 55%)",
+                        stroke: "hsl(45, 90%, 70%)",
+                        strokeWidth: 1,
+                        outline: "none",
+                        cursor: "pointer",
+                      },
+                      pressed: {
+                        fill: "hsl(45, 90%, 45%)",
+                        outline: "none",
+                      },
+                    }}
+                  />
+                );
+              })
             }
           </Geographies>
         </ZoomableGroup>
       </ComposableMap>
+
+      {/* Legend */}
+      <MapLegend
+        mode={mapMode}
+        onToggle={() => setMapMode((m) => (m === "default" ? "heatmap" : "default"))}
+      />
 
       {/* Tooltip */}
       {tooltipData && (
