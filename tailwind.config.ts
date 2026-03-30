@@ -47,6 +47,14 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        map: {
+          bg: "hsl(var(--map-bg))",
+          ocean: "hsl(var(--map-ocean))",
+          border: "hsl(var(--map-border))",
+          "tooltip-bg": "hsl(var(--map-tooltip-bg))",
+          "tooltip-border": "hsl(var(--map-tooltip-border))",
+          highlight: "hsl(var(--map-highlight))",
+        },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",

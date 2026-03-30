@@ -36,7 +36,14 @@ All colors MUST be HSL.
     --input: 214.3 31.8% 91.4%;
     --ring: 222.2 84% 4.9%;
 
-    --radius: 0.5rem;
+    --radius: 0.75rem;
+
+    --map-bg: 210 30% 12%;
+    --map-ocean: 210 40% 18%;
+    --map-border: 210 20% 30%;
+    --map-tooltip-bg: 220 25% 10%;
+    --map-tooltip-border: 210 30% 25%;
+    --map-highlight: 45 90% 55%;
 
     --sidebar-background: 0 0% 98%;
 
