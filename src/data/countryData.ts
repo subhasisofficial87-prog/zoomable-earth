@@ -184,3 +184,37 @@ const COUNTRY_COLORS = [
 export function getCountryColor(index: number): string {
   return COUNTRY_COLORS[index % COUNTRY_COLORS.length];
 }
+
+// Parse population string to number
+function parsePopulation(pop: string): number {
+  return parseInt(pop.replace(/,/g, ""), 10) || 0;
+}
+
+// Heatmap color based on population
+const HEATMAP_STOPS = [
+  { threshold: 0,           color: "hsl(210, 30%, 60%)" },   // very low - cool blue
+  { threshold: 1_000_000,   color: "hsl(180, 40%, 50%)" },   // teal
+  { threshold: 10_000_000,  color: "hsl(120, 40%, 45%)" },   // green
+  { threshold: 50_000_000,  color: "hsl(60, 55%, 50%)" },    // yellow
+  { threshold: 100_000_000, color: "hsl(30, 65%, 50%)" },    // orange
+  { threshold: 500_000_000, color: "hsl(0, 60%, 45%)" },     // red
+  { threshold: 1_000_000_000, color: "hsl(340, 70%, 35%)" }, // deep crimson
+];
+
+export const HEATMAP_LEGEND = HEATMAP_STOPS.map((s, i, arr) => ({
+  color: s.color,
+  label: i === arr.length - 1
+    ? `${(s.threshold / 1e6).toFixed(0)}M+`
+    : `${s.threshold < 1e6 ? "<1M" : (s.threshold / 1e6).toFixed(0) + "M"}`,
+}));
+
+export function getHeatmapColor(alpha3: string): string {
+  const info = countryData[alpha3];
+  if (!info) return "hsl(210, 20%, 35%)";
+  const pop = parsePopulation(info.population);
+  let color = HEATMAP_STOPS[0].color;
+  for (const stop of HEATMAP_STOPS) {
+    if (pop >= stop.threshold) color = stop.color;
+  }
+  return color;
+}
