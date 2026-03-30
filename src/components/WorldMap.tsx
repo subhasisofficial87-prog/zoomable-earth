@@ -187,6 +187,12 @@ const WorldMap = () => {
         </ZoomableGroup>
       </ComposableMap>
 
+      {/* Legend */}
+      <MapLegend
+        mode={mapMode}
+        onToggle={() => setMapMode((m) => (m === "default" ? "heatmap" : "default"))}
+      />
+
       {/* Tooltip */}
       {tooltipData && (
         <CountryTooltip
