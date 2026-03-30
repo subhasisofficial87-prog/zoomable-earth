@@ -72,6 +72,14 @@ const WorldMap = () => {
     setCenter([0, 20]);
   };
 
+  const handleSearchSelect = useCallback((code: string) => {
+    const coords = countryCoordinates[code];
+    if (coords) {
+      setCenter(coords);
+      setZoom(4);
+    }
+  }, []);
+
   useEffect(() => {
     const handleClickOutside = () => setTooltipData(null);
     window.addEventListener("click", handleClickOutside);
