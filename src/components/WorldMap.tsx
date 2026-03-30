@@ -49,6 +49,7 @@ const WorldMap = () => {
   } | null>(null);
   const [zoom, setZoom] = useState(1);
   const [center, setCenter] = useState<[number, number]>([0, 20]);
+  const [mapMode, setMapMode] = useState<"default" | "heatmap">("default");
   const containerRef = useRef<HTMLDivElement>(null);
 
   const handleCountryClick = useCallback(
