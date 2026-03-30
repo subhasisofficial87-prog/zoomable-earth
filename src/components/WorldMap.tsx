@@ -5,10 +5,11 @@ import {
   Geography,
   ZoomableGroup,
 } from "react-simple-maps";
-import { countryData, getCountryColor, type CountryInfo } from "@/data/countryData";
+import { countryData, getCountryColor, getHeatmapColor, type CountryInfo } from "@/data/countryData";
 import { countryCoordinates } from "@/data/countryCoordinates";
 import CountryTooltip from "./CountryTooltip";
 import CountrySearch from "./CountrySearch";
+import MapLegend from "./MapLegend";
 
 const GEO_URL = "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json";
 
