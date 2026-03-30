@@ -6,7 +6,9 @@ import {
   ZoomableGroup,
 } from "react-simple-maps";
 import { countryData, getCountryColor, type CountryInfo } from "@/data/countryData";
+import { countryCoordinates } from "@/data/countryCoordinates";
 import CountryTooltip from "./CountryTooltip";
+import CountrySearch from "./CountrySearch";
 
 const GEO_URL = "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json";
 
@@ -70,6 +72,14 @@ const WorldMap = () => {
     setCenter([0, 20]);
   };
 
+  const handleSearchSelect = useCallback((code: string) => {
+    const coords = countryCoordinates[code];
+    if (coords) {
+      setCenter(coords);
+      setZoom(4);
+    }
+  }, []);
+
   useEffect(() => {
     const handleClickOutside = () => setTooltipData(null);
     window.addEventListener("click", handleClickOutside);
@@ -81,8 +91,11 @@ const WorldMap = () => {
       ref={containerRef}
       className="relative w-full h-screen bg-map-bg overflow-hidden"
     >
+      {/* Search */}
+      <CountrySearch onSelectCountry={handleSearchSelect} />
+
       {/* Header */}
-      <div className="absolute top-0 left-0 right-0 z-10 flex items-center justify-between px-6 py-4">
+      <div className="absolute top-14 left-0 right-0 z-10 flex items-center justify-between px-6 py-2">
         <h1 className="text-2xl font-bold tracking-tight text-map-highlight">
           World Explorer
         </h1>
