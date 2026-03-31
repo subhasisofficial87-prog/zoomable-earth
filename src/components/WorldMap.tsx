@@ -5,7 +5,7 @@ import {
   Geography,
   ZoomableGroup,
 } from "react-simple-maps";
-import { countryData, getCountryColor, getHeatmapColor, type CountryInfo } from "@/data/countryData";
+import { countryData, getCountryColor, getHeatmapColor, getGdpHeatmapColor, type CountryInfo } from "@/data/countryData";
 import { countryCoordinates } from "@/data/countryCoordinates";
 import CountryTooltip from "./CountryTooltip";
 import CountrySearch from "./CountrySearch";
