@@ -5,11 +5,11 @@ import {
   Geography,
   ZoomableGroup,
 } from "react-simple-maps";
-import { countryData, getCountryColor, getHeatmapColor, type CountryInfo } from "@/data/countryData";
+import { countryData, getCountryColor, getHeatmapColor, getGdpHeatmapColor, type CountryInfo } from "@/data/countryData";
 import { countryCoordinates } from "@/data/countryCoordinates";
 import CountryTooltip from "./CountryTooltip";
 import CountrySearch from "./CountrySearch";
-import MapLegend from "./MapLegend";
+import MapLegend, { type MapMode } from "./MapLegend";
 
 const GEO_URL = "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json";
 
@@ -49,7 +49,7 @@ const WorldMap = () => {
   } | null>(null);
   const [zoom, setZoom] = useState(1);
   const [center, setCenter] = useState<[number, number]>([0, 20]);
-  const [mapMode, setMapMode] = useState<"default" | "heatmap">("default");
+  const [mapMode, setMapMode] = useState<MapMode>("default");
   const containerRef = useRef<HTMLDivElement>(null);
 
   const handleCountryClick = useCallback(
@@ -151,6 +151,8 @@ const WorldMap = () => {
                 const alpha3 = numericToAlpha3[id] || id;
                 const fillColor = mapMode === "heatmap"
                   ? getHeatmapColor(alpha3)
+                  : mapMode === "gdp"
+                  ? getGdpHeatmapColor(alpha3)
                   : getCountryColor(i);
                 return (
                   <Geography
@@ -190,7 +192,7 @@ const WorldMap = () => {
       {/* Legend */}
       <MapLegend
         mode={mapMode}
-        onToggle={() => setMapMode((m) => (m === "default" ? "heatmap" : "default"))}
+        onToggle={(mode) => setMapMode(mode)}
       />
 
       {/* Tooltip */}
