@@ -219,3 +219,32 @@ export function getHeatmapColor(alpha3: string): string {
   }
   return color;
 }
+
+// GDP per capita heatmap
+const GDP_STOPS = [
+  { threshold: 0,      color: "hsl(0, 50%, 40%)" },      // very low - red
+  { threshold: 1000,   color: "hsl(20, 55%, 45%)" },     // low - orange-red
+  { threshold: 5000,   color: "hsl(40, 60%, 50%)" },     // lower-mid - orange
+  { threshold: 15000,  color: "hsl(60, 55%, 50%)" },     // mid - yellow
+  { threshold: 30000,  color: "hsl(100, 45%, 45%)" },    // upper-mid - light green
+  { threshold: 50000,  color: "hsl(150, 50%, 40%)" },    // high - green
+  { threshold: 80000,  color: "hsl(180, 55%, 35%)" },    // very high - teal
+];
+
+export const GDP_HEATMAP_LEGEND = GDP_STOPS.map((s, i, arr) => ({
+  color: s.color,
+  label: i === arr.length - 1
+    ? `$${(s.threshold / 1000).toFixed(0)}k+`
+    : `${s.threshold < 1000 ? "<$1k" : "$" + (s.threshold / 1000).toFixed(0) + "k"}`,
+}));
+
+export function getGdpHeatmapColor(alpha3: string): string {
+  const info = countryData[alpha3];
+  if (!info) return "hsl(210, 20%, 35%)";
+  const gdp = info.gdpPerCapita;
+  let color = GDP_STOPS[0].color;
+  for (const stop of GDP_STOPS) {
+    if (gdp >= stop.threshold) color = stop.color;
+  }
+  return color;
+}
