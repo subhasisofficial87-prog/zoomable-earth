@@ -151,6 +151,8 @@ const WorldMap = () => {
                 const alpha3 = numericToAlpha3[id] || id;
                 const fillColor = mapMode === "heatmap"
                   ? getHeatmapColor(alpha3)
+                  : mapMode === "gdp"
+                  ? getGdpHeatmapColor(alpha3)
                   : getCountryColor(i);
                 return (
                   <Geography
