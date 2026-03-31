@@ -35,6 +35,7 @@ const CountryTooltip = ({ info, x, y, onClose }: CountryTooltipProps) => {
       <div className="space-y-2 text-sm">
         <Row label="Capital" value={info.capital} />
         <Row label="Population" value={info.population} />
+        <Row label="GDP / Capita" value={`$${info.gdpPerCapita.toLocaleString()}`} />
         <Row label="Currency" value={`${info.currency} (${info.currencyCode})`} />
         <Row
           label="1 USD"
