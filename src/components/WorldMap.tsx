@@ -192,7 +192,7 @@ const WorldMap = () => {
       {/* Legend */}
       <MapLegend
         mode={mapMode}
-        onToggle={() => setMapMode((m) => (m === "default" ? "heatmap" : "default"))}
+        onToggle={(mode) => setMapMode(mode)}
       />
 
       {/* Tooltip */}

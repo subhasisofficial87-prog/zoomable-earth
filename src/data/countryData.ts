@@ -5,6 +5,7 @@ export interface CountryInfo {
   currency: string;
   currencyCode: string;
   usdValue: string;
+  gdpPerCapita: number; // USD
 }
 
 export const countryData: Record<string, CountryInfo> = {
