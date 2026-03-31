@@ -9,7 +9,7 @@ import { countryData, getCountryColor, getHeatmapColor, getGdpHeatmapColor, type
 import { countryCoordinates } from "@/data/countryCoordinates";
 import CountryTooltip from "./CountryTooltip";
 import CountrySearch from "./CountrySearch";
-import MapLegend from "./MapLegend";
+import MapLegend, { type MapMode } from "./MapLegend";
 
 const GEO_URL = "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json";
 
