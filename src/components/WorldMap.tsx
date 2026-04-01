@@ -74,6 +74,9 @@ const WorldMap = () => {
   const [mapMode, setMapMode] = useState<MapMode>("default");
   const [continent, setContinent] = useState<Continent>("All");
   const [showComparison, setShowComparison] = useState(false);
+  const [timelineActive, setTimelineActive] = useState(false);
+  const [timelinePeriod, setTimelinePeriod] = useState(TIMELINE_PERIODS.length - 1);
+  const [hoveredCountry, setHoveredCountry] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
   const handleCountryClick = useCallback(
