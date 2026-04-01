@@ -15,6 +15,8 @@ import ContinentFilter from "./ContinentFilter";
 import CountryComparison from "./CountryComparison";
 import { GitCompareArrows } from "lucide-react";
 import type { CountryInfo } from "@/data/countryData";
+import TimelineSlider from "./TimelineSlider";
+import { getRulingEntity, getEmpireColor, TIMELINE_PERIODS } from "@/data/historicalData";
 
 const GEO_URL = "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json";
 
@@ -49,12 +51,19 @@ function getCountryFill(
   alpha3: string,
   index: number,
   mapMode: MapMode,
-  continent: Continent
+  continent: Continent,
+  timelineActive?: boolean,
+  timelineYear?: number
 ): string {
   const dimmed = "hsl(210, 15%, 22%)";
   const inContinent = continent === "All" || countryContinentMap[alpha3] === continent;
 
   if (!inContinent) return dimmed;
+
+  if (timelineActive && timelineYear !== undefined) {
+    const entity = getRulingEntity(alpha3, timelineYear);
+    return getEmpireColor(entity);
+  }
 
   if (mapMode === "heatmap") return getHeatmapColor(alpha3);
   if (mapMode === "gdp") return getGdpHeatmapColor(alpha3);
@@ -72,6 +81,9 @@ const WorldMap = () => {
   const [mapMode, setMapMode] = useState<MapMode>("default");
   const [continent, setContinent] = useState<Continent>("All");
   const [showComparison, setShowComparison] = useState(false);
+  const [timelineActive, setTimelineActive] = useState(false);
+  const [timelinePeriod, setTimelinePeriod] = useState(TIMELINE_PERIODS.length - 1);
+  const [hoveredCountry, setHoveredCountry] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
   const handleCountryClick = useCallback(
@@ -186,7 +198,7 @@ const WorldMap = () => {
               geographies.map((geo, i) => {
                 const id = geo.id || geo.properties?.["ISO_A3"];
                 const alpha3 = numericToAlpha3[id] || id;
-                const fillColor = getCountryFill(alpha3, i, mapMode, continent);
+                const fillColor = getCountryFill(alpha3, i, mapMode, continent, timelineActive, TIMELINE_PERIODS[timelinePeriod].year);
                 const isDimmed = continent !== "All" && countryContinentMap[alpha3] !== continent;
                 return (
                   <Geography
@@ -196,6 +208,8 @@ const WorldMap = () => {
                       e.stopPropagation();
                       handleCountryClick(geo, e);
                     }}
+                    onMouseEnter={() => setHoveredCountry(alpha3)}
+                    onMouseLeave={() => setHoveredCountry(null)}
                     style={{
                       default: {
                         fill: fillColor,
@@ -225,6 +239,15 @@ const WorldMap = () => {
           </Geographies>
         </ZoomableGroup>
       </ComposableMap>
+
+      {/* Timeline */}
+      <TimelineSlider
+        active={timelineActive}
+        onToggle={() => setTimelineActive((v) => !v)}
+        periodIndex={timelinePeriod}
+        onPeriodChange={setTimelinePeriod}
+        hoveredCountry={hoveredCountry}
+      />
 
       {/* Legend */}
       <MapLegend mode={mapMode} onToggle={(mode) => setMapMode(mode)} />
