@@ -208,6 +208,8 @@ const WorldMap = () => {
                       e.stopPropagation();
                       handleCountryClick(geo, e);
                     }}
+                    onMouseEnter={() => setHoveredCountry(alpha3)}
+                    onMouseLeave={() => setHoveredCountry(null)}
                     style={{
                       default: {
                         fill: fillColor,
