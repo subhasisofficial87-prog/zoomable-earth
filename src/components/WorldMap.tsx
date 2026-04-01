@@ -5,15 +5,19 @@ import {
   Geography,
   ZoomableGroup,
 } from "react-simple-maps";
-import { countryData, getCountryColor, getHeatmapColor, getGdpHeatmapColor, type CountryInfo } from "@/data/countryData";
+import { countryData, getCountryColor, getHeatmapColor, getGdpHeatmapColor } from "@/data/countryData";
 import { countryCoordinates } from "@/data/countryCoordinates";
+import { countryContinentMap, type Continent } from "@/data/continentData";
 import CountryTooltip from "./CountryTooltip";
 import CountrySearch from "./CountrySearch";
 import MapLegend, { type MapMode } from "./MapLegend";
+import ContinentFilter from "./ContinentFilter";
+import CountryComparison from "./CountryComparison";
+import { GitCompareArrows } from "lucide-react";
+import type { CountryInfo } from "@/data/countryData";
 
 const GEO_URL = "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json";
 
-// ISO numeric to ISO alpha-3 mapping
 const numericToAlpha3: Record<string, string> = {
   "004":"AFG","008":"ALB","012":"DZA","024":"AGO","032":"ARG","036":"AUS","040":"AUT",
   "050":"BGD","056":"BEL","064":"BTN","068":"BOL","070":"BIH","072":"BWA","076":"BRA",
@@ -41,6 +45,22 @@ const numericToAlpha3: Record<string, string> = {
   "728":"SSD",
 };
 
+function getCountryFill(
+  alpha3: string,
+  index: number,
+  mapMode: MapMode,
+  continent: Continent
+): string {
+  const dimmed = "hsl(210, 15%, 22%)";
+  const inContinent = continent === "All" || countryContinentMap[alpha3] === continent;
+
+  if (!inContinent) return dimmed;
+
+  if (mapMode === "heatmap") return getHeatmapColor(alpha3);
+  if (mapMode === "gdp") return getGdpHeatmapColor(alpha3);
+  return getCountryColor(index);
+}
+
 const WorldMap = () => {
   const [tooltipData, setTooltipData] = useState<{
     info: CountryInfo;
@@ -50,6 +70,8 @@ const WorldMap = () => {
   const [zoom, setZoom] = useState(1);
   const [center, setCenter] = useState<[number, number]>([0, 20]);
   const [mapMode, setMapMode] = useState<MapMode>("default");
+  const [continent, setContinent] = useState<Continent>("All");
+  const [showComparison, setShowComparison] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
   const handleCountryClick = useCallback(
@@ -97,14 +119,29 @@ const WorldMap = () => {
       <CountrySearch onSelectCountry={handleSearchSelect} />
 
       {/* Header */}
-      <div className="absolute top-14 left-0 right-0 z-10 flex items-center justify-between px-6 py-2">
+      <div className="absolute top-14 left-0 z-10 flex items-center gap-3 px-6 py-2">
         <h1 className="text-2xl font-bold tracking-tight text-map-highlight">
           World Explorer
         </h1>
-        <p className="text-sm text-muted-foreground hidden sm:block">
-          Click any country to learn more
-        </p>
+        <button
+          onClick={(e) => { e.stopPropagation(); setShowComparison((v) => !v); }}
+          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${
+            showComparison
+              ? "bg-map-highlight text-map-ocean border-map-highlight"
+              : "bg-map-ocean/90 text-map-highlight border-map-border hover:bg-map-border/50"
+          }`}
+        >
+          <GitCompareArrows className="w-3.5 h-3.5" /> Compare
+        </button>
       </div>
+
+      {/* Continent Filter */}
+      <ContinentFilter selected={continent} onSelect={setContinent} />
+
+      {/* Country Comparison */}
+      {showComparison && (
+        <CountryComparison onClose={() => setShowComparison(false)} />
+      )}
 
       {/* Zoom Controls */}
       <div className="absolute bottom-6 right-6 z-10 flex flex-col gap-2">
@@ -149,11 +186,8 @@ const WorldMap = () => {
               geographies.map((geo, i) => {
                 const id = geo.id || geo.properties?.["ISO_A3"];
                 const alpha3 = numericToAlpha3[id] || id;
-                const fillColor = mapMode === "heatmap"
-                  ? getHeatmapColor(alpha3)
-                  : mapMode === "gdp"
-                  ? getGdpHeatmapColor(alpha3)
-                  : getCountryColor(i);
+                const fillColor = getCountryFill(alpha3, i, mapMode, continent);
+                const isDimmed = continent !== "All" && countryContinentMap[alpha3] !== continent;
                 return (
                   <Geography
                     key={geo.rsmKey}
@@ -168,17 +202,20 @@ const WorldMap = () => {
                         stroke: "hsl(210, 20%, 25%)",
                         strokeWidth: 0.5,
                         outline: "none",
+                        opacity: isDimmed ? 0.4 : 1,
                       },
                       hover: {
-                        fill: "hsl(45, 90%, 55%)",
-                        stroke: "hsl(45, 90%, 70%)",
-                        strokeWidth: 1,
+                        fill: isDimmed ? fillColor : "hsl(45, 90%, 55%)",
+                        stroke: isDimmed ? "hsl(210, 20%, 25%)" : "hsl(45, 90%, 70%)",
+                        strokeWidth: isDimmed ? 0.5 : 1,
                         outline: "none",
-                        cursor: "pointer",
+                        cursor: isDimmed ? "default" : "pointer",
+                        opacity: isDimmed ? 0.4 : 1,
                       },
                       pressed: {
-                        fill: "hsl(45, 90%, 45%)",
+                        fill: isDimmed ? fillColor : "hsl(45, 90%, 45%)",
                         outline: "none",
+                        opacity: isDimmed ? 0.4 : 1,
                       },
                     }}
                   />
@@ -190,10 +227,7 @@ const WorldMap = () => {
       </ComposableMap>
 
       {/* Legend */}
-      <MapLegend
-        mode={mapMode}
-        onToggle={(mode) => setMapMode(mode)}
-      />
+      <MapLegend mode={mapMode} onToggle={(mode) => setMapMode(mode)} />
 
       {/* Tooltip */}
       {tooltipData && (
