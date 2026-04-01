@@ -238,6 +238,15 @@ const WorldMap = () => {
         </ZoomableGroup>
       </ComposableMap>
 
+      {/* Timeline */}
+      <TimelineSlider
+        active={timelineActive}
+        onToggle={() => setTimelineActive((v) => !v)}
+        periodIndex={timelinePeriod}
+        onPeriodChange={setTimelinePeriod}
+        hoveredCountry={hoveredCountry}
+      />
+
       {/* Legend */}
       <MapLegend mode={mapMode} onToggle={(mode) => setMapMode(mode)} />
 
