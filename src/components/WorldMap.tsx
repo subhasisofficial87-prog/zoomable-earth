@@ -15,6 +15,8 @@ import ContinentFilter from "./ContinentFilter";
 import CountryComparison from "./CountryComparison";
 import { GitCompareArrows } from "lucide-react";
 import type { CountryInfo } from "@/data/countryData";
+import TimelineSlider from "./TimelineSlider";
+import { getRulingEntity, getEmpireColor, TIMELINE_PERIODS } from "@/data/historicalData";
 
 const GEO_URL = "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json";
 
