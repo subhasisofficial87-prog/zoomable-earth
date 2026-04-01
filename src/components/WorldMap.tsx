@@ -51,12 +51,19 @@ function getCountryFill(
   alpha3: string,
   index: number,
   mapMode: MapMode,
-  continent: Continent
+  continent: Continent,
+  timelineActive?: boolean,
+  timelineYear?: number
 ): string {
   const dimmed = "hsl(210, 15%, 22%)";
   const inContinent = continent === "All" || countryContinentMap[alpha3] === continent;
 
   if (!inContinent) return dimmed;
+
+  if (timelineActive && timelineYear !== undefined) {
+    const entity = getRulingEntity(alpha3, timelineYear);
+    return getEmpireColor(entity);
+  }
 
   if (mapMode === "heatmap") return getHeatmapColor(alpha3);
   if (mapMode === "gdp") return getGdpHeatmapColor(alpha3);
