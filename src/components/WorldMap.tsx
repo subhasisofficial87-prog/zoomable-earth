@@ -257,9 +257,12 @@ const WorldMap = () => {
       {tooltipData && (
         <CountryTooltip
           info={tooltipData.info}
+          countryCode={tooltipData.code}
           x={tooltipData.x}
           y={tooltipData.y}
           onClose={() => setTooltipData(null)}
+          timelineActive={timelineActive}
+          timelineYear={TIMELINE_PERIODS[timelinePeriod].year}
         />
       )}
     </div>
