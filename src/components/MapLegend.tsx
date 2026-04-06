@@ -28,7 +28,7 @@ const MapLegend = ({ mode, onToggle }: MapLegendProps) => {
   const title = mode === "heatmap" ? "Population" : mode === "gdp" ? "GDP / Capita" : "Legend";
 
   return (
-    <div className="absolute bottom-6 left-6 z-10 flex flex-col gap-2" onClick={(e) => e.stopPropagation()}>
+    <div className="flex flex-col gap-2" onClick={(e) => e.stopPropagation()}>
       {/* Mode buttons */}
       <div className="flex flex-col gap-1">
         {MODES.filter((m) => m.key !== mode).map((m) => {
