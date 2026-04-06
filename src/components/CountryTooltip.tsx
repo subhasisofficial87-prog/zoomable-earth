@@ -36,8 +36,15 @@ const CountryTooltip = ({ info, countryCode, x, y, onClose, timelineActive, time
       </button>
 
       <h2 className="text-lg font-bold text-map-highlight mb-3 pr-6">
-        {info.name}
+        {flag && <span className="mr-1.5">{flag}</span>}{info.name}
       </h2>
+
+      {ruler && (
+        <div className="mb-3 px-2 py-1.5 rounded-md bg-map-border/30 text-xs text-primary-foreground">
+          <span className="text-muted-foreground">Ruled by: </span>
+          <span className="font-medium text-map-highlight">{ruler}</span>
+        </div>
+      )}
 
       <div className="space-y-2 text-sm">
         <Row label="Capital" value={info.capital} />
