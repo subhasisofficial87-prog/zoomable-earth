@@ -96,7 +96,7 @@ const WorldMap = () => {
         const rect = containerRef.current?.getBoundingClientRect();
         const x = event.clientX - (rect?.left || 0);
         const y = event.clientY - (rect?.top || 0);
-        setTooltipData({ info, x, y });
+        setTooltipData({ info, code: alpha3, x, y });
       }
     },
     []
