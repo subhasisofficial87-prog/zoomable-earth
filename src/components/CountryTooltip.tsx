@@ -1,14 +1,21 @@
 import { type CountryInfo } from "@/data/countryData";
 import { X } from "lucide-react";
+import { getFlag } from "@/data/countryFlags";
+import { getRulingEntity } from "@/data/historicalData";
 
 interface CountryTooltipProps {
   info: CountryInfo;
+  countryCode: string;
   x: number;
   y: number;
   onClose: () => void;
+  timelineActive?: boolean;
+  timelineYear?: number;
 }
 
-const CountryTooltip = ({ info, x, y, onClose }: CountryTooltipProps) => {
+const CountryTooltip = ({ info, countryCode, x, y, onClose, timelineActive, timelineYear }: CountryTooltipProps) => {
+  const flag = getFlag(countryCode);
+  const ruler = timelineActive && timelineYear !== undefined ? getRulingEntity(countryCode, timelineYear) : null;
   // Adjust position to stay within viewport
   const style: React.CSSProperties = {
     left: Math.min(x, window.innerWidth - 300),
@@ -29,8 +36,15 @@ const CountryTooltip = ({ info, x, y, onClose }: CountryTooltipProps) => {
       </button>
 
       <h2 className="text-lg font-bold text-map-highlight mb-3 pr-6">
-        {info.name}
+        {flag && <span className="mr-1.5">{flag}</span>}{info.name}
       </h2>
+
+      {ruler && (
+        <div className="mb-3 px-2 py-1.5 rounded-md bg-map-border/30 text-xs text-primary-foreground">
+          <span className="text-muted-foreground">Ruled by: </span>
+          <span className="font-medium text-map-highlight">{ruler}</span>
+        </div>
+      )}
 
       <div className="space-y-2 text-sm">
         <Row label="Capital" value={info.capital} />

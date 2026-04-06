@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useMemo } from "react";
 import { Search, X } from "lucide-react";
 import { countryData } from "@/data/countryData";
+import { getFlag } from "@/data/countryFlags";
 
 interface CountrySearchProps {
   onSelectCountry: (code: string) => void;
@@ -60,6 +61,7 @@ const CountrySearch = ({ onSelectCountry }: CountrySearchProps) => {
                 setOpen(false);
               }}
             >
+              <span className="mr-1.5">{getFlag(code)}</span>
               {info.name}
               <span className="ml-2 text-xs text-muted-foreground">{info.capital}</span>
             </button>

@@ -13,6 +13,7 @@ import CountrySearch from "./CountrySearch";
 import MapLegend, { type MapMode } from "./MapLegend";
 import ContinentFilter from "./ContinentFilter";
 import CountryComparison from "./CountryComparison";
+import TimelineLegend from "./TimelineLegend";
 import { GitCompareArrows } from "lucide-react";
 import type { CountryInfo } from "@/data/countryData";
 import TimelineSlider from "./TimelineSlider";
@@ -73,6 +74,7 @@ function getCountryFill(
 const WorldMap = () => {
   const [tooltipData, setTooltipData] = useState<{
     info: CountryInfo;
+    code: string;
     x: number;
     y: number;
   } | null>(null);
@@ -95,7 +97,7 @@ const WorldMap = () => {
         const rect = containerRef.current?.getBoundingClientRect();
         const x = event.clientX - (rect?.left || 0);
         const y = event.clientY - (rect?.top || 0);
-        setTooltipData({ info, x, y });
+        setTooltipData({ info, code: alpha3, x, y });
       }
     },
     []
@@ -249,6 +251,9 @@ const WorldMap = () => {
         hoveredCountry={hoveredCountry}
       />
 
+      {/* Timeline Legend */}
+      {timelineActive && <TimelineLegend periodIndex={timelinePeriod} />}
+
       {/* Legend */}
       <MapLegend mode={mapMode} onToggle={(mode) => setMapMode(mode)} />
 
@@ -256,9 +261,12 @@ const WorldMap = () => {
       {tooltipData && (
         <CountryTooltip
           info={tooltipData.info}
+          countryCode={tooltipData.code}
           x={tooltipData.x}
           y={tooltipData.y}
           onClose={() => setTooltipData(null)}
+          timelineActive={timelineActive}
+          timelineYear={TIMELINE_PERIODS[timelinePeriod].year}
         />
       )}
     </div>
