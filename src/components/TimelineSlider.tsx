@@ -53,7 +53,7 @@ const TimelineSlider = ({
   };
 
   return (
-    <div className="absolute bottom-6 left-6 z-10" onClick={(e) => e.stopPropagation()}>
+    <div onClick={(e) => e.stopPropagation()}>
       {/* Toggle Button */}
       <button
         onClick={onToggle}

@@ -242,20 +242,20 @@ const WorldMap = () => {
         </ZoomableGroup>
       </ComposableMap>
 
-      {/* Timeline */}
-      <TimelineSlider
-        active={timelineActive}
-        onToggle={() => setTimelineActive((v) => !v)}
-        periodIndex={timelinePeriod}
-        onPeriodChange={setTimelinePeriod}
-        hoveredCountry={hoveredCountry}
-      />
+      {/* Bottom-left controls */}
+      <div className="absolute bottom-6 left-6 z-10 flex flex-col gap-2">
+        <TimelineSlider
+          active={timelineActive}
+          onToggle={() => setTimelineActive((v) => !v)}
+          periodIndex={timelinePeriod}
+          onPeriodChange={setTimelinePeriod}
+          hoveredCountry={hoveredCountry}
+        />
+        {!timelineActive && <MapLegend mode={mapMode} onToggle={(mode) => setMapMode(mode)} />}
+      </div>
 
       {/* Timeline Legend */}
       {timelineActive && <TimelineLegend periodIndex={timelinePeriod} />}
-
-      {/* Legend */}
-      <MapLegend mode={mapMode} onToggle={(mode) => setMapMode(mode)} />
 
       {/* Tooltip */}
       {tooltipData && (
