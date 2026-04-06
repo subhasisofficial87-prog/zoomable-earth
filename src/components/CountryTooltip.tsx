@@ -13,7 +13,9 @@ interface CountryTooltipProps {
   timelineYear?: number;
 }
 
-const CountryTooltip = ({ info, x, y, onClose }: CountryTooltipProps) => {
+const CountryTooltip = ({ info, countryCode, x, y, onClose, timelineActive, timelineYear }: CountryTooltipProps) => {
+  const flag = getFlag(countryCode);
+  const ruler = timelineActive && timelineYear !== undefined ? getRulingEntity(countryCode, timelineYear) : null;
   // Adjust position to stay within viewport
   const style: React.CSSProperties = {
     left: Math.min(x, window.innerWidth - 300),
