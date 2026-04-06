@@ -73,6 +73,7 @@ function getCountryFill(
 const WorldMap = () => {
   const [tooltipData, setTooltipData] = useState<{
     info: CountryInfo;
+    code: string;
     x: number;
     y: number;
   } | null>(null);
