@@ -1,11 +1,16 @@
 import { type CountryInfo } from "@/data/countryData";
 import { X } from "lucide-react";
+import { getFlag } from "@/data/countryFlags";
+import { getRulingEntity } from "@/data/historicalData";
 
 interface CountryTooltipProps {
   info: CountryInfo;
+  countryCode: string;
   x: number;
   y: number;
   onClose: () => void;
+  timelineActive?: boolean;
+  timelineYear?: number;
 }
 
 const CountryTooltip = ({ info, x, y, onClose }: CountryTooltipProps) => {
