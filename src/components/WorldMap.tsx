@@ -251,6 +251,9 @@ const WorldMap = () => {
         hoveredCountry={hoveredCountry}
       />
 
+      {/* Timeline Legend */}
+      {timelineActive && <TimelineLegend periodIndex={timelinePeriod} />}
+
       {/* Legend */}
       <MapLegend mode={mapMode} onToggle={(mode) => setMapMode(mode)} />
 
