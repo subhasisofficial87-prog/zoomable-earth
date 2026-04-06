@@ -254,6 +254,9 @@ const WorldMap = () => {
         {!timelineActive && <MapLegend mode={mapMode} onToggle={(mode) => setMapMode(mode)} />}
       </div>
 
+      {/* Timeline Legend */}
+      {timelineActive && <TimelineLegend periodIndex={timelinePeriod} />}
+
       {/* Tooltip */}
       {tooltipData && (
         <CountryTooltip
