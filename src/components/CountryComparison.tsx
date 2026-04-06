@@ -97,9 +97,9 @@ const CountryComparison = ({ onClose }: CountryComparisonProps) => {
       {infoA && infoB && (
         <div>
           <div className="grid grid-cols-[1fr_auto_1fr] gap-2 mb-2">
-            <p className="text-right text-sm font-bold text-map-highlight">{infoA.name}</p>
+            <p className="text-right text-sm font-bold text-map-highlight">{getFlag(codeA)} {infoA.name}</p>
             <span className="text-muted-foreground text-xs text-center min-w-[80px]">vs</span>
-            <p className="text-left text-sm font-bold text-map-highlight">{infoB.name}</p>
+            <p className="text-left text-sm font-bold text-map-highlight">{getFlag(codeB)} {infoB.name}</p>
           </div>
           {rows?.map((r, i) => (
             <StatRow key={i} label={r.label} a={r.a} b={r.b} highlight={r.highlight} />

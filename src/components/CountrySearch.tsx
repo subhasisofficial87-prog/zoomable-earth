@@ -61,6 +61,7 @@ const CountrySearch = ({ onSelectCountry }: CountrySearchProps) => {
                 setOpen(false);
               }}
             >
+              <span className="mr-1.5">{getFlag(code)}</span>
               {info.name}
               <span className="ml-2 text-xs text-muted-foreground">{info.capital}</span>
             </button>

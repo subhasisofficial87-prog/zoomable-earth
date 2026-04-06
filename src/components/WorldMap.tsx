@@ -13,6 +13,7 @@ import CountrySearch from "./CountrySearch";
 import MapLegend, { type MapMode } from "./MapLegend";
 import ContinentFilter from "./ContinentFilter";
 import CountryComparison from "./CountryComparison";
+import TimelineLegend from "./TimelineLegend";
 import { GitCompareArrows } from "lucide-react";
 import type { CountryInfo } from "@/data/countryData";
 import TimelineSlider from "./TimelineSlider";
