@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useMemo } from "react";
 import { Search, X } from "lucide-react";
 import { countryData } from "@/data/countryData";
+import { getFlag } from "@/data/countryFlags";
 
 interface CountrySearchProps {
   onSelectCountry: (code: string) => void;
