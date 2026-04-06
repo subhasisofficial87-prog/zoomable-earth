@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
 import { countryData, type CountryInfo } from "@/data/countryData";
 import { X, GitCompareArrows } from "lucide-react";
+import { getFlag } from "@/data/countryFlags";
 
 interface CountryComparisonProps {
   onClose: () => void;
