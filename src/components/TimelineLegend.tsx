@@ -34,13 +34,19 @@ const TimelineLegend = ({ periodIndex, highlightedEmpire, onHighlightEmpire }: T
       <h4 className="text-xs font-bold text-map-highlight mb-2">Empires & Powers</h4>
       <div className="space-y-1">
         {empires.map((name) => (
-          <div key={name} className="flex items-center gap-2">
+          <button
+            key={name}
+            onClick={() => onHighlightEmpire(highlightedEmpire === name ? null : name)}
+            className={`flex items-center gap-2 w-full text-left rounded px-1 py-0.5 transition-colors ${
+              highlightedEmpire === name ? "bg-map-border/50 ring-1 ring-map-highlight/50" : "hover:bg-map-border/30"
+            }`}
+          >
             <div
               className="w-3 h-3 rounded-sm shrink-0"
               style={{ backgroundColor: getEmpireColor(name) }}
             />
-            <span className="text-[11px] text-primary-foreground truncate">{name}</span>
-          </div>
+            <span className={`text-[11px] truncate ${highlightedEmpire === name ? "text-map-highlight font-medium" : "text-primary-foreground"}`}>{name}</span>
+          </button>
         ))}
       </div>
     </div>
