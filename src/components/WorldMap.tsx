@@ -54,7 +54,8 @@ function getCountryFill(
   mapMode: MapMode,
   continent: Continent,
   timelineActive?: boolean,
-  timelineYear?: number
+  timelineYear?: number,
+  highlightedEmpire?: string | null
 ): string {
   const dimmed = "hsl(210, 15%, 22%)";
   const inContinent = continent === "All" || countryContinentMap[alpha3] === continent;
@@ -63,6 +64,7 @@ function getCountryFill(
 
   if (timelineActive && timelineYear !== undefined) {
     const entity = getRulingEntity(alpha3, timelineYear);
+    if (highlightedEmpire && entity !== highlightedEmpire) return dimmed;
     return getEmpireColor(entity);
   }
 
