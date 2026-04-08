@@ -4,7 +4,18 @@ import { Globe } from "lucide-react";
 interface ContinentFilterProps {
   selected: Continent;
   onSelect: (continent: Continent) => void;
+  onZoom: (center: [number, number], zoom: number) => void;
 }
+
+const CONTINENT_VIEWS: Record<Continent, { center: [number, number]; zoom: number }> = {
+  All: { center: [0, 20], zoom: 1 },
+  Africa: { center: [20, 5], zoom: 2.2 },
+  Asia: { center: [85, 30], zoom: 2 },
+  Europe: { center: [15, 52], zoom: 3 },
+  "North America": { center: [-100, 45], zoom: 2 },
+  "South America": { center: [-60, -15], zoom: 2 },
+  Oceania: { center: [140, -25], zoom: 2.5 },
+};
 
 const ContinentFilter = ({ selected, onSelect }: ContinentFilterProps) => {
   return (
