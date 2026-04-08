@@ -3,9 +3,11 @@ import { TIMELINE_PERIODS, rulingEntities, getEmpireColor } from "@/data/histori
 
 interface TimelineLegendProps {
   periodIndex: number;
+  highlightedEmpire: string | null;
+  onHighlightEmpire: (empire: string | null) => void;
 }
 
-const TimelineLegend = ({ periodIndex }: TimelineLegendProps) => {
+const TimelineLegend = ({ periodIndex, highlightedEmpire, onHighlightEmpire }: TimelineLegendProps) => {
   const year = TIMELINE_PERIODS[periodIndex].year;
 
   const empires = useMemo(() => {
