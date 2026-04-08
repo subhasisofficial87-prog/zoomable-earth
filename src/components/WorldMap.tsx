@@ -14,7 +14,7 @@ import MapLegend, { type MapMode } from "./MapLegend";
 import ContinentFilter from "./ContinentFilter";
 import CountryComparison from "./CountryComparison";
 import TimelineLegend from "./TimelineLegend";
-import { GitCompareArrows } from "lucide-react";
+import { GitCompareArrows, Sun, Moon } from "lucide-react";
 import type { CountryInfo } from "@/data/countryData";
 import TimelineSlider from "./TimelineSlider";
 import { getRulingEntity, getEmpireColor, TIMELINE_PERIODS } from "@/data/historicalData";
