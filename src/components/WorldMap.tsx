@@ -173,6 +173,9 @@ const WorldMap = () => {
       {/* Continent Filter */}
       <ContinentFilter selected={continent} onSelect={setContinent} onZoom={(c, z) => { setCenter(c); setZoom(z); }} />
 
+      {/* Global Stats */}
+      <GlobalStats />
+
       {/* Country Comparison */}
       {showComparison && (
         <CountryComparison onClose={() => setShowComparison(false)} />
