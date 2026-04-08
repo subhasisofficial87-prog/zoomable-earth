@@ -79,7 +79,7 @@ const CountryComparison = ({ onClose }: CountryComparisonProps) => {
         >
           <option value="">Select country...</option>
           {allCountries.map(([code, info]) => (
-            <option key={code} value={code}>{info.name}</option>
+            <option key={code} value={code}>{getFlag(code)} {info.name}</option>
           ))}
         </select>
         <select
