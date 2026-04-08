@@ -14,7 +14,7 @@ import MapLegend, { type MapMode } from "./MapLegend";
 import ContinentFilter from "./ContinentFilter";
 import CountryComparison from "./CountryComparison";
 import TimelineLegend from "./TimelineLegend";
-import { GitCompareArrows } from "lucide-react";
+import { GitCompareArrows, Sun, Moon } from "lucide-react";
 import type { CountryInfo } from "@/data/countryData";
 import TimelineSlider from "./TimelineSlider";
 import { getRulingEntity, getEmpireColor, TIMELINE_PERIODS } from "@/data/historicalData";
@@ -54,7 +54,8 @@ function getCountryFill(
   mapMode: MapMode,
   continent: Continent,
   timelineActive?: boolean,
-  timelineYear?: number
+  timelineYear?: number,
+  highlightedEmpire?: string | null
 ): string {
   const dimmed = "hsl(210, 15%, 22%)";
   const inContinent = continent === "All" || countryContinentMap[alpha3] === continent;
@@ -63,6 +64,7 @@ function getCountryFill(
 
   if (timelineActive && timelineYear !== undefined) {
     const entity = getRulingEntity(alpha3, timelineYear);
+    if (highlightedEmpire && entity !== highlightedEmpire) return dimmed;
     return getEmpireColor(entity);
   }
 
@@ -86,6 +88,8 @@ const WorldMap = () => {
   const [timelineActive, setTimelineActive] = useState(false);
   const [timelinePeriod, setTimelinePeriod] = useState(TIMELINE_PERIODS.length - 1);
   const [hoveredCountry, setHoveredCountry] = useState<string | null>(null);
+  const [highlightedEmpire, setHighlightedEmpire] = useState<string | null>(null);
+  const [darkMode, setDarkMode] = useState(true);
   const containerRef = useRef<HTMLDivElement>(null);
 
   const handleCountryClick = useCallback(
@@ -124,6 +128,15 @@ const WorldMap = () => {
     return () => window.removeEventListener("click", handleClickOutside);
   }, []);
 
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", darkMode);
+  }, [darkMode]);
+
+  // Clear highlighted empire when timeline is toggled off
+  useEffect(() => {
+    if (!timelineActive) setHighlightedEmpire(null);
+  }, [timelineActive]);
+
   return (
     <div
       ref={containerRef}
@@ -146,6 +159,13 @@ const WorldMap = () => {
           }`}
         >
           <GitCompareArrows className="w-3.5 h-3.5" /> Compare
+        </button>
+        <button
+          onClick={(e) => { e.stopPropagation(); setDarkMode((v) => !v); }}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors bg-map-ocean/90 text-map-highlight border-map-border hover:bg-map-border/50"
+        >
+          {darkMode ? <Sun className="w-3.5 h-3.5" /> : <Moon className="w-3.5 h-3.5" />}
+          {darkMode ? "Light" : "Dark"}
         </button>
       </div>
 
@@ -200,7 +220,7 @@ const WorldMap = () => {
               geographies.map((geo, i) => {
                 const id = geo.id || geo.properties?.["ISO_A3"];
                 const alpha3 = numericToAlpha3[id] || id;
-                const fillColor = getCountryFill(alpha3, i, mapMode, continent, timelineActive, TIMELINE_PERIODS[timelinePeriod].year);
+                const fillColor = getCountryFill(alpha3, i, mapMode, continent, timelineActive, TIMELINE_PERIODS[timelinePeriod].year, highlightedEmpire);
                 const isDimmed = continent !== "All" && countryContinentMap[alpha3] !== continent;
                 return (
                   <Geography
@@ -255,7 +275,7 @@ const WorldMap = () => {
       </div>
 
       {/* Timeline Legend */}
-      {timelineActive && <TimelineLegend periodIndex={timelinePeriod} />}
+      {timelineActive && <TimelineLegend periodIndex={timelinePeriod} highlightedEmpire={highlightedEmpire} onHighlightEmpire={setHighlightedEmpire} />}
 
       {/* Tooltip */}
       {tooltipData && (
