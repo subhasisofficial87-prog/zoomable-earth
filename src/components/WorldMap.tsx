@@ -88,6 +88,8 @@ const WorldMap = () => {
   const [timelineActive, setTimelineActive] = useState(false);
   const [timelinePeriod, setTimelinePeriod] = useState(TIMELINE_PERIODS.length - 1);
   const [hoveredCountry, setHoveredCountry] = useState<string | null>(null);
+  const [highlightedEmpire, setHighlightedEmpire] = useState<string | null>(null);
+  const [darkMode, setDarkMode] = useState(true);
   const containerRef = useRef<HTMLDivElement>(null);
 
   const handleCountryClick = useCallback(
