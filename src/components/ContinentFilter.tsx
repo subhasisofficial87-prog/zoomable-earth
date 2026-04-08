@@ -26,7 +26,7 @@ const ContinentFilter = ({ selected, onSelect, onZoom }: ContinentFilterProps) =
       {CONTINENTS.map((c) => (
         <button
           key={c}
-          onClick={() => onSelect(c)}
+          onClick={() => { onSelect(c); const v = CONTINENT_VIEWS[c]; onZoom(v.center, v.zoom); }}
           className={`px-2.5 py-1.5 rounded-md text-xs font-medium border transition-colors ${
             selected === c
               ? "bg-map-highlight text-map-ocean border-map-highlight"
