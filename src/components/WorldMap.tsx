@@ -170,7 +170,7 @@ const WorldMap = () => {
       </div>
 
       {/* Continent Filter */}
-      <ContinentFilter selected={continent} onSelect={setContinent} />
+      <ContinentFilter selected={continent} onSelect={setContinent} onZoom={(c, z) => { setCenter(c); setZoom(z); }} />
 
       {/* Country Comparison */}
       {showComparison && (
