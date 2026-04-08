@@ -213,7 +213,7 @@ const WorldMap = () => {
               geographies.map((geo, i) => {
                 const id = geo.id || geo.properties?.["ISO_A3"];
                 const alpha3 = numericToAlpha3[id] || id;
-                const fillColor = getCountryFill(alpha3, i, mapMode, continent, timelineActive, TIMELINE_PERIODS[timelinePeriod].year);
+                const fillColor = getCountryFill(alpha3, i, mapMode, continent, timelineActive, TIMELINE_PERIODS[timelinePeriod].year, highlightedEmpire);
                 const isDimmed = continent !== "All" && countryContinentMap[alpha3] !== continent;
                 return (
                   <Geography
