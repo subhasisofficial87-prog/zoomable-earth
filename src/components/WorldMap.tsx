@@ -128,6 +128,15 @@ const WorldMap = () => {
     return () => window.removeEventListener("click", handleClickOutside);
   }, []);
 
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", darkMode);
+  }, [darkMode]);
+
+  // Clear highlighted empire when timeline is toggled off
+  useEffect(() => {
+    if (!timelineActive) setHighlightedEmpire(null);
+  }, [timelineActive]);
+
   return (
     <div
       ref={containerRef}
