@@ -268,7 +268,7 @@ const WorldMap = () => {
       </div>
 
       {/* Timeline Legend */}
-      {timelineActive && <TimelineLegend periodIndex={timelinePeriod} />}
+      {timelineActive && <TimelineLegend periodIndex={timelinePeriod} highlightedEmpire={highlightedEmpire} onHighlightEmpire={setHighlightedEmpire} />}
 
       {/* Tooltip */}
       {tooltipData && (
