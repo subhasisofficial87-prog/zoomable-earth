@@ -17,7 +17,7 @@ const CONTINENT_VIEWS: Record<Continent, { center: [number, number]; zoom: numbe
   Oceania: { center: [140, -25], zoom: 2.5 },
 };
 
-const ContinentFilter = ({ selected, onSelect }: ContinentFilterProps) => {
+const ContinentFilter = ({ selected, onSelect, onZoom }: ContinentFilterProps) => {
   return (
     <div
       className="absolute top-14 right-6 z-10 flex flex-wrap gap-1 max-w-xs justify-end"
