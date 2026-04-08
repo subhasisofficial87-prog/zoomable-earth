@@ -160,6 +160,13 @@ const WorldMap = () => {
         >
           <GitCompareArrows className="w-3.5 h-3.5" /> Compare
         </button>
+        <button
+          onClick={(e) => { e.stopPropagation(); setDarkMode((v) => !v); }}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors bg-map-ocean/90 text-map-highlight border-map-border hover:bg-map-border/50"
+        >
+          {darkMode ? <Sun className="w-3.5 h-3.5" /> : <Moon className="w-3.5 h-3.5" />}
+          {darkMode ? "Light" : "Dark"}
+        </button>
       </div>
 
       {/* Continent Filter */}
