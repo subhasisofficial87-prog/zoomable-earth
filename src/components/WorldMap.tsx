@@ -239,6 +239,7 @@ const WorldMap = () => {
                         strokeWidth: 0.5,
                         outline: "none",
                         opacity: isDimmed ? 0.4 : 1,
+                        transition: "fill 0.6s ease, opacity 0.4s ease",
                       },
                       hover: {
                         fill: isDimmed ? fillColor : "hsl(45, 90%, 55%)",
