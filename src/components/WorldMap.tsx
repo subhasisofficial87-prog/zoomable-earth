@@ -21,6 +21,7 @@ import TimelineSlider from "./TimelineSlider";
 import { getRulingEntity, getEmpireColor, TIMELINE_PERIODS } from "@/data/historicalData";
 
 const GEO_URL = "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json";
+const INDIA_GEO_URL = "/india-official.json";
 
 const numericToAlpha3: Record<string, string> = {
   "004":"AFG","008":"ALB","012":"DZA","024":"AGO","032":"ARG","036":"AUS","040":"AUT",
