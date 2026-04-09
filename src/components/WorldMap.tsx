@@ -21,6 +21,7 @@ import TimelineSlider from "./TimelineSlider";
 import { getRulingEntity, getEmpireColor, TIMELINE_PERIODS } from "@/data/historicalData";
 
 const GEO_URL = "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json";
+const INDIA_GEO_URL = "/india-official.json";
 
 const numericToAlpha3: Record<string, string> = {
   "004":"AFG","008":"ALB","012":"DZA","024":"AGO","032":"ARG","036":"AUS","040":"AUT",
@@ -224,6 +225,8 @@ const WorldMap = () => {
               geographies.map((geo, i) => {
                 const id = geo.id || geo.properties?.["ISO_A3"];
                 const alpha3 = numericToAlpha3[id] || id;
+                // Skip default India shape — we overlay official boundaries
+                if (alpha3 === "IND") return null;
                 const fillColor = getCountryFill(alpha3, i, mapMode, continent, timelineActive, TIMELINE_PERIODS[timelinePeriod].year, highlightedEmpire);
                 const isDimmed = continent !== "All" && countryContinentMap[alpha3] !== continent;
                 return (
@@ -263,6 +266,52 @@ const WorldMap = () => {
                 );
               })
             }
+          </Geographies>
+          {/* India official boundary overlay */}
+          <Geographies geography={INDIA_GEO_URL}>
+            {({ geographies }) => {
+              const indiaFill = getCountryFill("IND", 0, mapMode, continent, timelineActive, TIMELINE_PERIODS[timelinePeriod].year, highlightedEmpire);
+              const isDimmed = continent !== "All" && countryContinentMap["IND"] !== continent;
+              return geographies.map((geo) => (
+                <Geography
+                  key={geo.rsmKey}
+                  geography={geo}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    const rect = containerRef.current?.getBoundingClientRect();
+                    const x = e.clientX - (rect?.left || 0);
+                    const y = e.clientY - (rect?.top || 0);
+                    const info = countryData["IND"];
+                    if (info) setTooltipData({ info, code: "IND", x, y });
+                  }}
+                  onMouseEnter={() => setHoveredCountry("IND")}
+                  onMouseLeave={() => setHoveredCountry(null)}
+                  style={{
+                    default: {
+                      fill: indiaFill,
+                      stroke: "hsl(210, 20%, 25%)",
+                      strokeWidth: 0.5,
+                      outline: "none",
+                      opacity: isDimmed ? 0.4 : 1,
+                      transition: "fill 0.6s ease, opacity 0.4s ease",
+                    },
+                    hover: {
+                      fill: isDimmed ? indiaFill : "hsl(45, 90%, 55%)",
+                      stroke: isDimmed ? "hsl(210, 20%, 25%)" : "hsl(45, 90%, 70%)",
+                      strokeWidth: isDimmed ? 0.5 : 1,
+                      outline: "none",
+                      cursor: isDimmed ? "default" : "pointer",
+                      opacity: isDimmed ? 0.4 : 1,
+                    },
+                    pressed: {
+                      fill: isDimmed ? indiaFill : "hsl(45, 90%, 45%)",
+                      outline: "none",
+                      opacity: isDimmed ? 0.4 : 1,
+                    },
+                  }}
+                />
+              ));
+            }}
           </Geographies>
         </ZoomableGroup>
       </ComposableMap>
