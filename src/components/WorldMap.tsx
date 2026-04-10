@@ -355,6 +355,8 @@ const WorldMap = () => {
           onClose={() => setTooltipData(null)}
           timelineActive={timelineActive}
           timelineYear={TIMELINE_PERIODS[timelinePeriod].year}
+          sunActive={sunActive}
+          sunDateTime={sunDateTime}
         />
       )}
     </div>
