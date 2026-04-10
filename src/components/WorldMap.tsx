@@ -317,6 +317,8 @@ const WorldMap = () => {
               ));
             }}
           </Geographies>
+          {/* Sun terminator overlay */}
+          {sunActive && !timelineActive && <SunTerminator dateTime={sunDateTime} />}
         </ZoomableGroup>
       </ComposableMap>
 
@@ -329,6 +331,14 @@ const WorldMap = () => {
           onPeriodChange={setTimelinePeriod}
           hoveredCountry={hoveredCountry}
         />
+        {!timelineActive && (
+          <SunControl
+            active={sunActive}
+            onToggle={() => setSunActive((v) => !v)}
+            dateTime={sunDateTime}
+            onDateTimeChange={setSunDateTime}
+          />
+        )}
         {!timelineActive && <MapLegend mode={mapMode} onToggle={(mode) => setMapMode(mode)} />}
       </div>
 
