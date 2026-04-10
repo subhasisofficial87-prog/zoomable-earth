@@ -34,60 +34,90 @@ function getSubsolarPoint(date: Date): [number, number] {
   return [((lon + 540) % 360) - 180, decl];
 }
 
+const LAYERS = [
+  { radius: 108, fill: "hsla(220, 40%, 5%, 0.08)", stroke: "none", id: "astro-twilight" },
+  { radius: 102, fill: "hsla(220, 40%, 5%, 0.10)", stroke: "none", id: "nautical-twilight" },
+  { radius: 96,  fill: "hsla(220, 40%, 8%, 0.12)", stroke: "none", id: "civil-twilight" },
+  { radius: 90,  fill: "hsla(220, 40%, 5%, 0.35)", stroke: "hsla(45, 80%, 50%, 0.25)", id: "night" },
+];
+
+const GOLDEN_HOUR = {
+  outerRadius: 90,
+  innerRadius: 84,
+  fill: "hsla(40, 90%, 50%, 0.10)",
+  stroke: "hsla(40, 80%, 55%, 0.18)",
+  id: "golden-hour",
+};
+
 const SunTerminator = ({ dateTime }: SunTerminatorProps) => {
-  const nightGeoJson = useMemo(() => {
+  const layerGeoJsons = useMemo(() => {
     const [lon, lat] = getSubsolarPoint(dateTime);
-    // Night hemisphere = circle of 90° centered on anti-solar point
     const antiLon = ((lon + 180 + 540) % 360) - 180;
     const antiLat = -lat;
 
-    const circle = geoCircle()
-      .center([antiLon, antiLat])
-      .radius(90)
-      .precision(1)();
+    const makeCircle = (center: [number, number], radius: number) =>
+      geoCircle().center(center).radius(radius).precision(1)();
 
-    return {
-      type: "FeatureCollection" as const,
-      features: [
-        {
-          type: "Feature" as const,
-          properties: {},
-          geometry: circle,
-        },
-      ],
+    const nightLayers = LAYERS.map((l) => ({
+      ...l,
+      geo: {
+        type: "FeatureCollection" as const,
+        features: [{ type: "Feature" as const, properties: {}, geometry: makeCircle([antiLon, antiLat], l.radius) }],
+      },
+    }));
+
+    // Golden hour: ring on the sunlit side (circle from subsolar point)
+    const goldenOuter = makeCircle([lon, lat], GOLDEN_HOUR.outerRadius);
+    const goldenInner = makeCircle([lon, lat], GOLDEN_HOUR.innerRadius);
+    const goldenGeo = {
+      outer: { type: "FeatureCollection" as const, features: [{ type: "Feature" as const, properties: {}, geometry: goldenOuter }] },
+      inner: { type: "FeatureCollection" as const, features: [{ type: "Feature" as const, properties: {}, geometry: goldenInner }] },
     };
+
+    return { nightLayers, goldenGeo };
   }, [dateTime]);
 
+  const noPointer = { pointerEvents: "none" as const, outline: "none" };
+
   return (
-    <Geographies geography={nightGeoJson}>
-      {({ geographies }) =>
-        geographies.map((geo) => (
-          <Geography
-            key="night-overlay"
-            geography={geo}
-            style={{
-              default: {
-                fill: "hsla(220, 40%, 5%, 0.45)",
-                stroke: "hsla(45, 80%, 50%, 0.25)",
-                strokeWidth: 1,
-                outline: "none",
-                pointerEvents: "none" as const,
-              },
-              hover: {
-                fill: "hsla(220, 40%, 5%, 0.45)",
-                outline: "none",
-                pointerEvents: "none" as const,
-              },
-              pressed: {
-                fill: "hsla(220, 40%, 5%, 0.45)",
-                outline: "none",
-                pointerEvents: "none" as const,
-              },
-            }}
-          />
-        ))
-      }
-    </Geographies>
+    <>
+      {/* Golden hour band – render outer filled, then punch out inner with ocean color is complex;
+          instead render outer with warm tint */}
+      <Geographies geography={layerGeoJsons.goldenGeo.outer}>
+        {({ geographies }) =>
+          geographies.map((geo) => (
+            <Geography
+              key="golden-outer"
+              geography={geo}
+              style={{
+                default: { fill: GOLDEN_HOUR.fill, stroke: GOLDEN_HOUR.stroke, strokeWidth: 0.5, ...noPointer },
+                hover: { fill: GOLDEN_HOUR.fill, ...noPointer },
+                pressed: { fill: GOLDEN_HOUR.fill, ...noPointer },
+              }}
+            />
+          ))
+        }
+      </Geographies>
+
+      {/* Night & twilight layers (largest first so smaller/darker overlaps on top) */}
+      {layerGeoJsons.nightLayers.map((layer) => (
+        <Geographies key={layer.id} geography={layer.geo}>
+          {({ geographies }) =>
+            geographies.map((geo) => (
+              <Geography
+                key={layer.id}
+                geography={geo}
+                style={{
+                  default: { fill: layer.fill, stroke: layer.stroke, strokeWidth: layer.stroke !== "none" ? 1 : 0, ...noPointer },
+                  hover: { fill: layer.fill, ...noPointer },
+                  pressed: { fill: layer.fill, ...noPointer },
+                }}
+              />
+            ))
+          }
+        </Geographies>
+      ))}
+    </>
   );
 };
 
