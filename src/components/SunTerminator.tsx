@@ -1,37 +1,35 @@
 import { useMemo } from "react";
-import { Geographies, Geography } from "react-simple-maps";
+import { Geographies, Geography, Marker } from "react-simple-maps";
 import { geoCircle } from "d3-geo";
+import { cityLights } from "@/data/cityLights";
 
 interface SunTerminatorProps {
   dateTime: Date;
 }
 
-/**
- * Calculate the subsolar point (lat/lon where the sun is directly overhead)
- */
 function getSubsolarPoint(date: Date): [number, number] {
   const jd = date.getTime() / 86400000 + 2440587.5;
   const n = jd - 2451545.0;
-
-  // Solar mean longitude & mean anomaly
   const L = (280.46 + 0.9856474 * n) % 360;
   const g = ((357.528 + 0.9856003 * n) % 360) * (Math.PI / 180);
-
-  // Ecliptic longitude
   const lambda = (L + 1.915 * Math.sin(g) + 0.02 * Math.sin(2 * g)) * (Math.PI / 180);
-
-  // Obliquity of ecliptic
   const epsilon = 23.439 * (Math.PI / 180);
-
-  // Declination (latitude)
   const decl = Math.asin(Math.sin(epsilon) * Math.sin(lambda)) * (180 / Math.PI);
-
-  // Right ascension → hour angle → longitude
-  const eqTime = (L - (Math.atan2(Math.sin(lambda) * Math.cos(epsilon), Math.cos(lambda)) * (180 / Math.PI))) ;
+  const eqTime = (L - (Math.atan2(Math.sin(lambda) * Math.cos(epsilon), Math.cos(lambda)) * (180 / Math.PI)));
   const utHours = date.getUTCHours() + date.getUTCMinutes() / 60 + date.getUTCSeconds() / 3600;
   const lon = -(utHours - 12) * 15 - eqTime;
-
   return [((lon + 540) % 360) - 180, decl];
+}
+
+/** Check if a point is on the night side */
+function isNightSide(lon: number, lat: number, antiLon: number, antiLat: number): boolean {
+  const toRad = Math.PI / 180;
+  const dLon = (lon - antiLon) * toRad;
+  const lat1 = antiLat * toRad;
+  const lat2 = lat * toRad;
+  const a = Math.sin(lat1) * Math.sin(lat2) + Math.cos(lat1) * Math.cos(lat2) * Math.cos(dLon);
+  const angle = Math.acos(Math.min(1, Math.max(-1, a))) * (180 / Math.PI);
+  return angle < 90;
 }
 
 const LAYERS = [
@@ -50,7 +48,7 @@ const GOLDEN_HOUR = {
 };
 
 const SunTerminator = ({ dateTime }: SunTerminatorProps) => {
-  const layerGeoJsons = useMemo(() => {
+  const { nightLayers, goldenGeo, nightCities } = useMemo(() => {
     const [lon, lat] = getSubsolarPoint(dateTime);
     const antiLon = ((lon + 180 + 540) % 360) - 180;
     const antiLat = -lat;
@@ -66,7 +64,6 @@ const SunTerminator = ({ dateTime }: SunTerminatorProps) => {
       },
     }));
 
-    // Golden hour: ring on the sunlit side (circle from subsolar point)
     const goldenOuter = makeCircle([lon, lat], GOLDEN_HOUR.outerRadius);
     const goldenInner = makeCircle([lon, lat], GOLDEN_HOUR.innerRadius);
     const goldenGeo = {
@@ -74,16 +71,20 @@ const SunTerminator = ({ dateTime }: SunTerminatorProps) => {
       inner: { type: "FeatureCollection" as const, features: [{ type: "Feature" as const, properties: {}, geometry: goldenInner }] },
     };
 
-    return { nightLayers, goldenGeo };
+    // Filter cities that are on the night side
+    const nightCities = cityLights.filter(([cLon, cLat]) =>
+      isNightSide(cLon, cLat, antiLon, antiLat)
+    );
+
+    return { nightLayers, goldenGeo, nightCities };
   }, [dateTime]);
 
   const noPointer = { pointerEvents: "none" as const, outline: "none" };
 
   return (
     <>
-      {/* Golden hour band – render outer filled, then punch out inner with ocean color is complex;
-          instead render outer with warm tint */}
-      <Geographies geography={layerGeoJsons.goldenGeo.outer}>
+      {/* Golden hour band */}
+      <Geographies geography={goldenGeo.outer}>
         {({ geographies }) =>
           geographies.map((geo) => (
             <Geography
@@ -99,8 +100,8 @@ const SunTerminator = ({ dateTime }: SunTerminatorProps) => {
         }
       </Geographies>
 
-      {/* Night & twilight layers (largest first so smaller/darker overlaps on top) */}
-      {layerGeoJsons.nightLayers.map((layer) => (
+      {/* Night & twilight layers */}
+      {nightLayers.map((layer) => (
         <Geographies key={layer.id} geography={layer.geo}>
           {({ geographies }) =>
             geographies.map((geo) => (
@@ -116,6 +117,22 @@ const SunTerminator = ({ dateTime }: SunTerminatorProps) => {
             ))
           }
         </Geographies>
+      ))}
+
+      {/* City lights in the dark area */}
+      {nightCities.map(([lon, lat, intensity], i) => (
+        <Marker key={`light-${i}`} coordinates={[lon, lat]}>
+          <circle
+            r={1.2 * intensity + 0.4}
+            fill={`hsla(45, 80%, 80%, ${0.5 * intensity + 0.2})`}
+            style={{ pointerEvents: "none", filter: "blur(0.3px)" }}
+          />
+          <circle
+            r={2.5 * intensity + 0.8}
+            fill={`hsla(40, 70%, 65%, ${0.15 * intensity + 0.05})`}
+            style={{ pointerEvents: "none" }}
+          />
+        </Marker>
       ))}
     </>
   );
