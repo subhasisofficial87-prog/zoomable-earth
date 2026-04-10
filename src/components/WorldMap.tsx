@@ -18,6 +18,8 @@ import GlobalStats from "./GlobalStats";
 import { GitCompareArrows, Sun, Moon } from "lucide-react";
 import type { CountryInfo } from "@/data/countryData";
 import TimelineSlider from "./TimelineSlider";
+import SunTerminator from "./SunTerminator";
+import SunControl from "./SunControl";
 import { getRulingEntity, getEmpireColor, TIMELINE_PERIODS } from "@/data/historicalData";
 
 const GEO_URL = "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json";
@@ -92,6 +94,8 @@ const WorldMap = () => {
   const [hoveredCountry, setHoveredCountry] = useState<string | null>(null);
   const [highlightedEmpire, setHighlightedEmpire] = useState<string | null>(null);
   const [darkMode, setDarkMode] = useState(true);
+  const [sunActive, setSunActive] = useState(false);
+  const [sunDateTime, setSunDateTime] = useState(new Date());
   const containerRef = useRef<HTMLDivElement>(null);
 
   const handleCountryClick = useCallback(
@@ -313,6 +317,8 @@ const WorldMap = () => {
               ));
             }}
           </Geographies>
+          {/* Sun terminator overlay */}
+          {sunActive && !timelineActive && <SunTerminator dateTime={sunDateTime} />}
         </ZoomableGroup>
       </ComposableMap>
 
@@ -325,6 +331,14 @@ const WorldMap = () => {
           onPeriodChange={setTimelinePeriod}
           hoveredCountry={hoveredCountry}
         />
+        {!timelineActive && (
+          <SunControl
+            active={sunActive}
+            onToggle={() => setSunActive((v) => !v)}
+            dateTime={sunDateTime}
+            onDateTimeChange={setSunDateTime}
+          />
+        )}
         {!timelineActive && <MapLegend mode={mapMode} onToggle={(mode) => setMapMode(mode)} />}
       </div>
 
