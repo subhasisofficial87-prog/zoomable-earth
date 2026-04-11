@@ -142,7 +142,10 @@ const SunTerminator = ({ dateTime }: SunTerminatorProps) => {
           <circle
             r={0.3 + brightness * 0.4}
             fill={`hsla(220, 20%, 95%, ${0.15 + brightness * 0.35})`}
-            style={{ pointerEvents: "none" }}
+            style={{
+              pointerEvents: "none",
+              animation: `twinkle ${1.5 + brightness * 2}s ease-in-out ${brightness * 3}s infinite`,
+            }}
           />
         </Marker>
       ))}
