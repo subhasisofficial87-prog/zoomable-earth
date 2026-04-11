@@ -48,7 +48,7 @@ const GOLDEN_HOUR = {
 };
 
 const SunTerminator = ({ dateTime }: SunTerminatorProps) => {
-  const { nightLayers, goldenGeo, nightCities, nightStars, shootingStars } = useMemo(() => {
+  const { nightLayers, goldenGeo, nightCities, nightStars, shootingStars, auroraPoints } = useMemo(() => {
     const [lon, lat] = getSubsolarPoint(dateTime);
     const antiLon = ((lon + 180 + 540) % 360) - 180;
     const antiLat = -lat;
@@ -113,8 +113,36 @@ const SunTerminator = ({ dateTime }: SunTerminatorProps) => {
       }
     }
 
-    return { nightLayers, goldenGeo, nightCities, nightStars, shootingStars };
-    return { nightLayers, goldenGeo, nightCities, nightStars };
+    // Generate aurora borealis/australis points along polar regions
+    const auroraPoints: { lon: number; lat: number; width: number; height: number; hue: number; delay: number; opacity: number }[] = [];
+    const polarBands = [
+      { baseLat: 68, range: 8 },
+      { baseLat: -68, range: 8 },
+    ];
+    for (const band of polarBands) {
+      for (let i = 0; i < 12; i++) {
+        const offset = band.baseLat > 0 ? 0 : 100;
+        const ha = Math.sin(seed + i * 337.1 + offset) * 43758.5453;
+        const hb = Math.sin(seed + i * 491.3 + offset) * 43758.5453;
+        const hc = Math.sin(seed + i * 613.7 + offset) * 43758.5453;
+        const aLon = (ha - Math.floor(ha)) * 360 - 180;
+        const aLat = band.baseLat + (hb - Math.floor(hb)) * band.range - band.range / 2;
+        if (isNightSide(aLon, aLat, antiLon, antiLat)) {
+          const r = hc - Math.floor(hc);
+          auroraPoints.push({
+            lon: aLon,
+            lat: aLat,
+            width: 8 + r * 12,
+            height: 3 + r * 4,
+            hue: r < 0.5 ? 140 + r * 40 : 280 + r * 40,
+            delay: r * 8,
+            opacity: 0.15 + r * 0.2,
+          });
+        }
+      }
+    }
+
+    return { nightLayers, goldenGeo, nightCities, nightStars, shootingStars, auroraPoints };
   }, [dateTime]);
 
   const noPointer = { pointerEvents: "none" as const, outline: "none" };
@@ -208,7 +236,35 @@ const SunTerminator = ({ dateTime }: SunTerminatorProps) => {
         </Marker>
       ))}
 
-      {/* Shooting star gradient definition */}
+      {/* Aurora borealis/australis */}
+      {auroraPoints.map((aurora, i) => (
+        <Marker key={`aurora-${i}`} coordinates={[aurora.lon, aurora.lat]}>
+          <ellipse
+            rx={aurora.width}
+            ry={aurora.height}
+            fill={`hsla(${aurora.hue}, 70%, 55%, ${aurora.opacity})`}
+            style={{
+              pointerEvents: "none",
+              filter: "blur(3px)",
+              animation: `auroraPulse ${4 + aurora.delay}s ease-in-out ${aurora.delay}s infinite`,
+              transformOrigin: "center",
+            }}
+          />
+          <ellipse
+            rx={aurora.width * 0.6}
+            ry={aurora.height * 0.5}
+            fill={`hsla(${aurora.hue + 20}, 80%, 65%, ${aurora.opacity * 0.7})`}
+            style={{
+              pointerEvents: "none",
+              filter: "blur(2px)",
+              animation: `auroraShimmer ${3 + aurora.delay * 0.5}s ease-in-out ${aurora.delay * 1.5}s infinite`,
+              transformOrigin: "center",
+            }}
+          />
+        </Marker>
+      ))}
+
+      {/* Gradient definitions */}
       <defs>
         <linearGradient id="shootingStarGrad" x1="0%" y1="0%" x2="100%" y2="0%">
           <stop offset="0%" stopColor="hsla(220, 20%, 95%, 0)" />
