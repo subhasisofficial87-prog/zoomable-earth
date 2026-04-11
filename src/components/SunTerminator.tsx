@@ -76,7 +76,24 @@ const SunTerminator = ({ dateTime }: SunTerminatorProps) => {
       isNightSide(cLon, cLat, antiLon, antiLat)
     );
 
-    return { nightLayers, goldenGeo, nightCities };
+    // Generate stars in the night area
+    const nightStars: [number, number, number][] = [];
+    const seed = 12345;
+    for (let i = 0; i < 400; i++) {
+      const hash = Math.sin(seed + i * 127.1) * 43758.5453;
+      const r1 = hash - Math.floor(hash);
+      const hash2 = Math.sin(seed + i * 269.5 + 3.17) * 43758.5453;
+      const r2 = hash2 - Math.floor(hash2);
+      const hash3 = Math.sin(seed + i * 419.2 + 7.13) * 43758.5453;
+      const r3 = hash3 - Math.floor(hash3);
+      const sLon = r1 * 360 - 180;
+      const sLat = r2 * 140 - 70;
+      if (isNightSide(sLon, sLat, antiLon, antiLat)) {
+        nightStars.push([sLon, sLat, 0.3 + r3 * 0.7]);
+      }
+    }
+
+    return { nightLayers, goldenGeo, nightCities, nightStars };
   }, [dateTime]);
 
   const noPointer = { pointerEvents: "none" as const, outline: "none" };
