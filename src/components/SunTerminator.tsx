@@ -236,7 +236,35 @@ const SunTerminator = ({ dateTime }: SunTerminatorProps) => {
         </Marker>
       ))}
 
-      {/* Shooting star gradient definition */}
+      {/* Aurora borealis/australis */}
+      {auroraPoints.map((aurora, i) => (
+        <Marker key={`aurora-${i}`} coordinates={[aurora.lon, aurora.lat]}>
+          <ellipse
+            rx={aurora.width}
+            ry={aurora.height}
+            fill={`hsla(${aurora.hue}, 70%, 55%, ${aurora.opacity})`}
+            style={{
+              pointerEvents: "none",
+              filter: "blur(3px)",
+              animation: `auroraPulse ${4 + aurora.delay}s ease-in-out ${aurora.delay}s infinite`,
+              transformOrigin: "center",
+            }}
+          />
+          <ellipse
+            rx={aurora.width * 0.6}
+            ry={aurora.height * 0.5}
+            fill={`hsla(${aurora.hue + 20}, 80%, 65%, ${aurora.opacity * 0.7})`}
+            style={{
+              pointerEvents: "none",
+              filter: "blur(2px)",
+              animation: `auroraShimmer ${3 + aurora.delay * 0.5}s ease-in-out ${aurora.delay * 1.5}s infinite`,
+              transformOrigin: "center",
+            }}
+          />
+        </Marker>
+      ))}
+
+      {/* Gradient definitions */}
       <defs>
         <linearGradient id="shootingStarGrad" x1="0%" y1="0%" x2="100%" y2="0%">
           <stop offset="0%" stopColor="hsla(220, 20%, 95%, 0)" />
