@@ -113,8 +113,36 @@ const SunTerminator = ({ dateTime }: SunTerminatorProps) => {
       }
     }
 
-    return { nightLayers, goldenGeo, nightCities, nightStars, shootingStars };
-    return { nightLayers, goldenGeo, nightCities, nightStars };
+    // Generate aurora borealis/australis points along polar regions
+    const auroraPoints: { lon: number; lat: number; width: number; height: number; hue: number; delay: number; opacity: number }[] = [];
+    const polarBands = [
+      { baseLat: 68, range: 8 },
+      { baseLat: -68, range: 8 },
+    ];
+    for (const band of polarBands) {
+      for (let i = 0; i < 12; i++) {
+        const offset = band.baseLat > 0 ? 0 : 100;
+        const ha = Math.sin(seed + i * 337.1 + offset) * 43758.5453;
+        const hb = Math.sin(seed + i * 491.3 + offset) * 43758.5453;
+        const hc = Math.sin(seed + i * 613.7 + offset) * 43758.5453;
+        const aLon = (ha - Math.floor(ha)) * 360 - 180;
+        const aLat = band.baseLat + (hb - Math.floor(hb)) * band.range - band.range / 2;
+        if (isNightSide(aLon, aLat, antiLon, antiLat)) {
+          const r = hc - Math.floor(hc);
+          auroraPoints.push({
+            lon: aLon,
+            lat: aLat,
+            width: 8 + r * 12,
+            height: 3 + r * 4,
+            hue: r < 0.5 ? 140 + r * 40 : 280 + r * 40,
+            delay: r * 8,
+            opacity: 0.15 + r * 0.2,
+          });
+        }
+      }
+    }
+
+    return { nightLayers, goldenGeo, nightCities, nightStars, shootingStars, auroraPoints };
   }, [dateTime]);
 
   const noPointer = { pointerEvents: "none" as const, outline: "none" };
