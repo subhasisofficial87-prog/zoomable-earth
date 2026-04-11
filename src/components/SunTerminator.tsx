@@ -48,7 +48,7 @@ const GOLDEN_HOUR = {
 };
 
 const SunTerminator = ({ dateTime }: SunTerminatorProps) => {
-  const { nightLayers, goldenGeo, nightCities, nightStars } = useMemo(() => {
+  const { nightLayers, goldenGeo, nightCities, nightStars, shootingStars } = useMemo(() => {
     const [lon, lat] = getSubsolarPoint(dateTime);
     const antiLon = ((lon + 180 + 540) % 360) - 180;
     const antiLat = -lat;
@@ -93,6 +93,27 @@ const SunTerminator = ({ dateTime }: SunTerminatorProps) => {
       }
     }
 
+    // Generate shooting stars in the night area
+    const shootingStars: { lon: number; lat: number; angle: number; delay: number; duration: number }[] = [];
+    for (let i = 0; i < 8; i++) {
+      const h1 = Math.sin(seed + i * 311.7 + 5.3) * 43758.5453;
+      const h2 = Math.sin(seed + i * 523.1 + 9.7) * 43758.5453;
+      const h3 = Math.sin(seed + i * 743.3 + 2.1) * 43758.5453;
+      const h4 = Math.sin(seed + i * 197.9 + 6.4) * 43758.5453;
+      const sLon = (h1 - Math.floor(h1)) * 360 - 180;
+      const sLat = (h2 - Math.floor(h2)) * 120 - 60;
+      if (isNightSide(sLon, sLat, antiLon, antiLat)) {
+        shootingStars.push({
+          lon: sLon,
+          lat: sLat,
+          angle: (h3 - Math.floor(h3)) * 60 - 30,
+          delay: (h4 - Math.floor(h4)) * 20,
+          duration: 0.8 + (h3 - Math.floor(h3)) * 1.2,
+        });
+      }
+    }
+
+    return { nightLayers, goldenGeo, nightCities, nightStars, shootingStars };
     return { nightLayers, goldenGeo, nightCities, nightStars };
   }, [dateTime]);
 
@@ -165,6 +186,36 @@ const SunTerminator = ({ dateTime }: SunTerminatorProps) => {
           />
         </Marker>
       ))}
+
+      {/* Shooting stars */}
+      {shootingStars.map((star, i) => (
+        <Marker key={`shoot-${i}`} coordinates={[star.lon, star.lat]}>
+          <line
+            x1="0"
+            y1="0"
+            x2="12"
+            y2="0"
+            stroke="url(#shootingStarGrad)"
+            strokeWidth="0.6"
+            strokeLinecap="round"
+            transform={`rotate(${star.angle})`}
+            style={{
+              pointerEvents: "none",
+              opacity: 0,
+              animation: `shootingStar ${star.duration}s ease-out ${star.delay}s infinite`,
+            }}
+          />
+        </Marker>
+      ))}
+
+      {/* Shooting star gradient definition */}
+      <defs>
+        <linearGradient id="shootingStarGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stopColor="hsla(220, 20%, 95%, 0)" />
+          <stop offset="30%" stopColor="hsla(220, 20%, 95%, 0.8)" />
+          <stop offset="100%" stopColor="hsla(220, 20%, 95%, 0)" />
+        </linearGradient>
+      </defs>
     </>
   );
 };
