@@ -93,6 +93,27 @@ const SunTerminator = ({ dateTime }: SunTerminatorProps) => {
       }
     }
 
+    // Generate shooting stars in the night area
+    const shootingStars: { lon: number; lat: number; angle: number; delay: number; duration: number }[] = [];
+    for (let i = 0; i < 8; i++) {
+      const h1 = Math.sin(seed + i * 311.7 + 5.3) * 43758.5453;
+      const h2 = Math.sin(seed + i * 523.1 + 9.7) * 43758.5453;
+      const h3 = Math.sin(seed + i * 743.3 + 2.1) * 43758.5453;
+      const h4 = Math.sin(seed + i * 197.9 + 6.4) * 43758.5453;
+      const sLon = (h1 - Math.floor(h1)) * 360 - 180;
+      const sLat = (h2 - Math.floor(h2)) * 120 - 60;
+      if (isNightSide(sLon, sLat, antiLon, antiLat)) {
+        shootingStars.push({
+          lon: sLon,
+          lat: sLat,
+          angle: (h3 - Math.floor(h3)) * 60 - 30,
+          delay: (h4 - Math.floor(h4)) * 20,
+          duration: 0.8 + (h3 - Math.floor(h3)) * 1.2,
+        });
+      }
+    }
+
+    return { nightLayers, goldenGeo, nightCities, nightStars, shootingStars };
     return { nightLayers, goldenGeo, nightCities, nightStars };
   }, [dateTime]);
 
