@@ -186,6 +186,36 @@ const SunTerminator = ({ dateTime }: SunTerminatorProps) => {
           />
         </Marker>
       ))}
+
+      {/* Shooting stars */}
+      {shootingStars.map((star, i) => (
+        <Marker key={`shoot-${i}`} coordinates={[star.lon, star.lat]}>
+          <line
+            x1="0"
+            y1="0"
+            x2="12"
+            y2="0"
+            stroke="url(#shootingStarGrad)"
+            strokeWidth="0.6"
+            strokeLinecap="round"
+            transform={`rotate(${star.angle})`}
+            style={{
+              pointerEvents: "none",
+              opacity: 0,
+              animation: `shootingStar ${star.duration}s ease-out ${star.delay}s infinite`,
+            }}
+          />
+        </Marker>
+      ))}
+
+      {/* Shooting star gradient definition */}
+      <defs>
+        <linearGradient id="shootingStarGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stopColor="hsla(220, 20%, 95%, 0)" />
+          <stop offset="30%" stopColor="hsla(220, 20%, 95%, 0.8)" />
+          <stop offset="100%" stopColor="hsla(220, 20%, 95%, 0)" />
+        </linearGradient>
+      </defs>
     </>
   );
 };
