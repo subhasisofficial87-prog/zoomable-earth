@@ -136,6 +136,17 @@ const SunTerminator = ({ dateTime }: SunTerminatorProps) => {
         </Geographies>
       ))}
 
+      {/* Stars in the night sky */}
+      {nightStars.map(([sLon, sLat, brightness], i) => (
+        <Marker key={`star-${i}`} coordinates={[sLon, sLat]}>
+          <circle
+            r={0.3 + brightness * 0.4}
+            fill={`hsla(220, 20%, 95%, ${0.15 + brightness * 0.35})`}
+            style={{ pointerEvents: "none" }}
+          />
+        </Marker>
+      ))}
+
       {/* City lights in the dark area */}
       {nightCities.map(([lon, lat, intensity], i) => (
         <Marker key={`light-${i}`} coordinates={[lon, lat]}>
