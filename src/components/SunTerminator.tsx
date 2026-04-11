@@ -48,7 +48,7 @@ const GOLDEN_HOUR = {
 };
 
 const SunTerminator = ({ dateTime }: SunTerminatorProps) => {
-  const { nightLayers, goldenGeo, nightCities } = useMemo(() => {
+  const { nightLayers, goldenGeo, nightCities, nightStars } = useMemo(() => {
     const [lon, lat] = getSubsolarPoint(dateTime);
     const antiLon = ((lon + 180 + 540) % 360) - 180;
     const antiLat = -lat;
