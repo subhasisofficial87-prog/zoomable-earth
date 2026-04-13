@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { Sun, Play, Pause } from "lucide-react";
+import { getMoonPhase, getMoonIllumination } from "@/utils/moonCalc";
 
 interface SunControlProps {
   active: boolean;
@@ -90,6 +91,15 @@ const SunControl = ({ active, onToggle, dateTime, onDateTimeChange }: SunControl
             >
               {playing ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
             </button>
+          </div>
+
+          {/* Moon phase info */}
+          <div className="mt-3 pt-3 border-t border-map-border flex items-center justify-center gap-2">
+            <span className="text-lg">{getMoonPhase(dateTime).emoji}</span>
+            <div className="text-center">
+              <div className="text-xs text-map-highlight font-medium">{getMoonPhase(dateTime).name}</div>
+              <div className="text-[10px] text-muted-foreground">{getMoonIllumination(dateTime)}% illuminated</div>
+            </div>
           </div>
 
           <p className="text-[10px] text-muted-foreground text-center mt-2">
