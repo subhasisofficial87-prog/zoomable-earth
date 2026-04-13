@@ -1,8 +1,9 @@
 import { type CountryInfo } from "@/data/countryData";
-import { X, Sunrise, Sunset } from "lucide-react";
+import { X, Sunrise, Sunset, Moon } from "lucide-react";
 import { getFlag } from "@/data/countryFlags";
 import { getRulingEntity } from "@/data/historicalData";
 import { getSunriseSunset } from "@/utils/sunCalc";
+import { getMoonriseMoonset, getMoonPhase, getMoonIllumination } from "@/utils/moonCalc";
 import { countryCoordinates } from "@/data/countryCoordinates";
 
 interface CountryTooltipProps {
@@ -26,6 +27,16 @@ const CountryTooltip = ({ info, countryCode, x, y, onClose, timelineActive, time
     const coords = countryCoordinates[countryCode];
     if (!coords) return null;
     return getSunriseSunset(sunDateTime, coords[1], coords[0]);
+  })();
+
+  const moonData = (() => {
+    if (!sunActive || !sunDateTime) return null;
+    const coords = countryCoordinates[countryCode];
+    if (!coords) return null;
+    const times = getMoonriseMoonset(sunDateTime, coords[1], coords[0]);
+    const phase = getMoonPhase(sunDateTime);
+    const illum = getMoonIllumination(sunDateTime);
+    return { times, phase, illum };
   })();
   // Adjust position to stay within viewport
   const style: React.CSSProperties = {
@@ -100,6 +111,30 @@ const CountryTooltip = ({ info, countryCode, x, y, onClose, timelineActive, time
               <div className="flex items-center gap-1.5">
                 <Sunset className="w-3.5 h-3.5 text-orange-400" />
                 <span className="text-primary-foreground font-medium">{sunTimes.sunset}</span>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {moonData && (
+        <div className="mt-2 pt-2 border-t border-map-tooltip-border">
+          <div className="flex items-center gap-1 text-xs text-muted-foreground mb-2">
+            <Moon className="w-3.5 h-3.5 text-map-highlight" /> Moon · {moonData.phase.emoji} {moonData.phase.name} ({moonData.illum}%)
+          </div>
+          {"status" in moonData.times ? (
+            <div className="text-xs text-map-highlight font-medium">
+              {moonData.times.status === "always-up" ? "🌕 Moon always above horizon" : "🌑 Moon below horizon all day"}
+            </div>
+          ) : (
+            <div className="flex gap-4 text-sm">
+              <div className="flex items-center gap-1.5">
+                <span className="text-[10px] text-muted-foreground">Rise</span>
+                <span className="text-primary-foreground font-medium">{moonData.times.moonrise}</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span className="text-[10px] text-muted-foreground">Set</span>
+                <span className="text-primary-foreground font-medium">{moonData.times.moonset}</span>
               </div>
             </div>
           )}
