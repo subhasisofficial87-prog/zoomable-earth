@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { Geographies, Geography, Marker } from "react-simple-maps";
 import { geoCircle } from "d3-geo";
 import { cityLights } from "@/data/cityLights";
+import { getSublunarPoint, getMoonPhase } from "@/utils/moonCalc";
 
 interface SunTerminatorProps {
   dateTime: Date;
@@ -48,7 +49,7 @@ const GOLDEN_HOUR = {
 };
 
 const SunTerminator = ({ dateTime }: SunTerminatorProps) => {
-  const { nightLayers, goldenGeo, nightCities, nightStars, shootingStars, auroraPoints } = useMemo(() => {
+  const { nightLayers, goldenGeo, nightCities, nightStars, shootingStars, auroraPoints, moonPos, moonPhase } = useMemo(() => {
     const [lon, lat] = getSubsolarPoint(dateTime);
     const antiLon = ((lon + 180 + 540) % 360) - 180;
     const antiLat = -lat;
@@ -142,7 +143,11 @@ const SunTerminator = ({ dateTime }: SunTerminatorProps) => {
       }
     }
 
-    return { nightLayers, goldenGeo, nightCities, nightStars, shootingStars, auroraPoints };
+    // Moon position
+    const moonPos = getSublunarPoint(dateTime);
+    const moonPhase = getMoonPhase(dateTime);
+
+    return { nightLayers, goldenGeo, nightCities, nightStars, shootingStars, auroraPoints, moonPos, moonPhase };
   }, [dateTime]);
 
   const noPointer = { pointerEvents: "none" as const, outline: "none" };
@@ -263,6 +268,27 @@ const SunTerminator = ({ dateTime }: SunTerminatorProps) => {
           />
         </Marker>
       ))}
+
+      {/* Moon marker */}
+      <Marker coordinates={moonPos}>
+        <circle r={4} fill="hsla(45, 10%, 90%, 0.15)" style={{ pointerEvents: "none", filter: "blur(3px)" }} />
+        <circle r={2.5} fill="hsla(45, 10%, 90%, 0.1)" style={{ pointerEvents: "none", filter: "blur(6px)" }} />
+        <text
+          textAnchor="middle"
+          dominantBaseline="central"
+          style={{ fontSize: "8px", pointerEvents: "none", animation: "moonGlow 4s ease-in-out infinite" }}
+        >
+          {moonPhase.emoji}
+        </text>
+        <text
+          y={6}
+          textAnchor="middle"
+          fill="hsla(45, 10%, 95%, 0.7)"
+          style={{ fontSize: "1.8px", pointerEvents: "none", fontWeight: 600 }}
+        >
+          {moonPhase.name}
+        </text>
+      </Marker>
 
       {/* Gradient definitions */}
       <defs>
